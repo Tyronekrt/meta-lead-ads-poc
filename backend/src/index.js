@@ -132,6 +132,14 @@ async function fetchLeadFromGraph(leadgenId) {
 
 // ---------- routes ----------
 
+app.get('/', (_req, res) => {
+  res.json({
+    ok: true,
+    service: 'meta-lead-poc-backend',
+    endpoints: ['GET /health', 'GET /webhook (Meta verification)', 'POST /webhook (Meta leadgen events)', 'GET /api/leads', 'POST /api/test-lead'],
+  });
+});
+
 app.get('/health', (_req, res) => {
   res.json({ ok: true, leads: leads.length, time: new Date().toISOString() });
 });
