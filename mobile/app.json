@@ -7,7 +7,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "extra": {
-      "backendUrl": "http://10.0.2.2:3001"
+      "backendUrl": "http://localhost:3001"
     },
     "ios": {
       "supportsTablet": true
