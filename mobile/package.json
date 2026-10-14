@@ -1,0 +1,22 @@
+{
+  "name": "unque-live-leads",
+  "version": "1.0.0",
+  "description": "UnQue PoC: live Meta Lead Ads list (React Native + Socket.IO)",
+  "main": "index.js",
+  "dependencies": {
+    "expo": "~57.0.28",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-web": "^0.21.2",
+    "socket.io-client": "^4.8.4"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "private": true
+}

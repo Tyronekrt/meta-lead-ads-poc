@@ -1,0 +1,20 @@
+{
+  "name": "meta-lead-poc-backend",
+  "version": "1.0.0",
+  "description": "Meta Lead Ads webhook receiver + realtime broadcaster for React Native PoC",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
