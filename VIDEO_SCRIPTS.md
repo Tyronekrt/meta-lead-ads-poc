@@ -4,49 +4,51 @@
 > especially Part 1, which must sound ex-tempore (talking to a person, not a studio).
 
 **Deliverables checklist**
-- [ ] Loom 1 (≤5 min): live demo — app open → Testing Tool submit → lead appears untouched
+- [ ] Loom 1 (≤5 min): live demo — app open → Meta dashboard Test event POST → card appears untouched + enriched card via same push path, with the publish-gate disclosure below
 - [ ] Loom 2 (6–8 min): code + architecture walkthrough
 - [ ] 3 audio files (each ≥90 sec, no max): Part-1 answers, conversational, English/Hindi/Telugu
 - [ ] Email to krishna@unque.me, n.sarang@unque.me, nijam@unque.me with all links + repo + assumptions
 
 **Before you press record (both Looms)**
 1. Backend running: `cd backend && npm run dev` (terminal visible, `Webhook verified OK` in history).
-2. Public URL live: `ngrok http 3001` (or cloudflared) — Meta → laptop path tested once off-camera.
-3. Phone/simulator: `cd mobile && npx expo start` → **Live Leads** screen open, `LIVE` green dot visible, 1–2 old leads already in list (proves history works).
-4. Browser tabs pre-opened: (a) Meta Lead Ads Testing Tool with Page+Form selected, (b) backend `/health` (optional proof).
-5. Loom settings: screen + camera bubble (small, corner — never covering the phone screen), mic tested, notifications OFF (Do Not Disturb), clock visible for the "no touch" proof.
-6. Frame the shot: phone/emulator on the LEFT, Testing Tool on the RIGHT, both visible simultaneously. Hands visible and AWAY from the phone during the submit.
-7. Do one full dry run off-camera. If Meta is slow on take 1, the backup `curl /api/test-lead` is ready — but always show the real Testing Tool submit in the final video.
+2. Public URL live: `ngrok http 3001` (or cloudflared) — currently `https://legwarmer-nemeses-wispy.ngrok-free.dev`. **If ngrok restarts, the URL changes: update the Dashboard webhook subscription + Verify and Save again.** Webhook subscription done once off-camera (Meta → laptop path tested: inspector shows Meta's verification GET with Facebook User-Agent, backend logs `Webhook verified OK`).
+3. Phone/emulator: `cd mobile && npx expo start` → **Live Leads** screen open, `LIVE` green dot visible and STEADY (reload once if it flaps), 1 clean history lead in list (seed via `POST /api/test-lead`, proves history works). **Android emulator requires `app.json` backendUrl `http://10.0.2.2:3001`** (already set — do not use `localhost`).
+4. Browser tabs pre-opened: (a) App Dashboard → Webhooks page with the **Test / Send test event** button for `leadgen` ready, (b) ngrok inspector (`127.0.0.1:4040/inspect/http`) to show Meta's POST landing, (c) backend `/health` (optional proof).
+5. Loom settings: screen + camera bubble (small, corner — never covering the emulator screen), mic tested, notifications OFF (Do Not Disturb), clock visible for the "no touch" proof.
+6. Frame the shot: emulator on the LEFT, Webhooks dashboard + inspector on the RIGHT, both visible simultaneously. Hands visible and AWAY from the emulator during the event.
+7. Do one full dry run off-camera: Test-button event → ID-only card lands; then `curl /api/test-lead` → enriched card lands. Both must work before recording.
 
 ---
 
 ## LOOM 1 — Live demo (target 3:30, hard cap 5:00)
 
-### 0:00–0:30 — Intro (show your face + app screen)
-> "Hi, I'm [NAME]. This is my PoC for the Meta Lead Ads assignment. On the left is my React Native app — the Live Leads screen, already open. Green dot says LIVE, meaning it's connected over a websocket and waiting. On the right is Meta's Lead Ads Testing Tool — no real ads, just the official simulator. In a few seconds I'll submit a test lead there, and you'll see it appear in the app without me touching the phone."
+> CONTEXT (say it once, honestly, then move on): this app is in Development mode and publishing needs business verification, so Meta only delivers dashboard-sent test webhooks to it — the Testing Tool can't fire webhooks in this state. What you are about to see is still the full production path, with a real Meta-originated event.
 
-_ACTION: point cursor at green LIVE dot, then at Testing Tool Page/Form dropdowns._
+### 0:00–0:30 — Intro (show your face + app screen)
+> "Hi, I'm [NAME]. This is my PoC for the Meta Lead Ads assignment. On the left is my React Native app — the Live Leads screen, already open. Green dot says LIVE, meaning it's connected over a websocket and waiting. On the right is my Meta App Dashboard's Webhooks page, subscribed to the `leadgen` field with my backend as the callback. In a few seconds I'll fire a test leadgen event from Meta's own servers, and you'll see it appear in the app without me touching the emulator."
+
+_ACTION: point cursor at green LIVE dot, then at the Webhooks subscription row (callback URL + `leadgen`)._
 
 ### 0:30–1:00 — Architecture in 3 sentences (diagram or repo README on screen)
-> "Quick map: Testing Tool fires a webhook to my Node backend at POST /webhook. The backend looks up the full lead from Meta's Graph API using the leadgen ID, then pushes it over Socket.IO. The app just listens for a `new-lead` event and prepends it — no polling, no refresh button needed."
+> "Quick map: Meta fires a webhook to my Node backend at POST /webhook. The backend looks up the full lead from Meta's Graph API using the leadgen ID, then pushes it over Socket.IO. The app just listens for a `new-lead` event and prepends it — no polling, no refresh button needed. The only thing Development mode changes is which events Meta sends — the path is identical."
 
 _ACTION: flash README diagram or SETUP_META.md for 5 seconds. Keep it moving — details belong in Loom 2._
 
-### 1:00–2:30 — THE moment (do not touch the phone)
+### 1:00–2:30 — THE moment (do not touch the emulator)
 1. Say: _"The app is open, my hands are here — watch."_ Lift hands visibly off keyboard/mouse for 1 second.
-2. In the Testing Tool, fill: **Name: Loom Demo [time, e.g. 7:42pm]**, **Email: loom.[timestamp]@test.com**, **Phone: distinct number**. (Unique values prove it's the new lead, not an old row.)
-3. Say while clicking: _"Submitting the test lead now —"_, click **Submit/Create Lead**, then hands OFF again.
-4. Count silently to 3. The new card slides to the TOP with a green highlight. Point with cursor (not finger on phone).
-5. Say: _"There — [Name] just arrived at the top, with the META badge and timestamp. I haven't touched the device since the app opened."_
+2. Say while clicking: _"Firing the test leadgen event from Meta now —"_, click **Test / Send test event**, then hands OFF again. (If the dashboard shows the inspector option, the ngrok inspector tab is already open on the right.)
+3. Count silently to 3. The new card slides to the TOP with a green highlight (ID-only card — say so, see next line). Point with cursor (not finger on emulator).
+4. Say: _"There — it just arrived at the top, untouched. This one is ID-only because Meta's sample IDs aren't real leads, so there's nothing to enrich — my backend broadcasts it anyway instead of stalling, and says so on the card. Now the enriched half:"_
+5. In the terminal, run the prepared `curl -X POST http://localhost:3001/api/test-lead` with a unique name (**Loom Demo [time]**, unique email). Say: _"Same push path, now with full lead data —"_ the enriched card with name/email/phone slides to the top.
 
-_IF it takes >5s:_ stay calm, say _"Meta's test endpoint sometimes takes a few seconds — the backend already logged the webhook, here —"_ show terminal `leadgen webhook` line, then the card lands. Never cut the video mid-submit (a cut looks faked).
+_IF the Test event takes >5s:_ stay calm, say _"Meta's endpoint sometimes takes a few seconds — the backend already logged the webhook, here —"_ show terminal `leadgen webhook` line, then the card lands. Never cut the video mid-delivery (a cut looks faked).
 
 ### 2:30–3:15 — Prove it's real (30–45 sec)
 - Pull-to-refresh once (shows history endpoint works, count unchanged).
-- Show backend terminal log: `Broadcasting new-lead` line matching the lead ID.
-- Show the Testing Tool submission confirmation side-by-side with the app card — same name/email.
+- Show backend terminal log: `leadgen webhook` + `Broadcasting new-lead` lines matching the IDs.
+- Show the ngrok inspector `POST /webhook` → 200 with Facebook User-Agent side-by-side with the app card — same second.
 
-> "Same name, same email on both sides, same second. That's the full loop: Meta form → webhook → Graph enrichment → socket push → live render."
+> "Same event on both sides, same second. That's the full loop: Meta event → webhook → Graph lookup → socket push → live render. The only reason this is a dashboard event and not a Testing-Tool submit is Meta's publish gate for Development apps — documented in my ASSUMPTIONS.md."
 
 ### 3:15–3:30 — Close
 > "That's the demo. Repo link is in the description and the email — README has the one-command setup, SETUP_META has the Meta steps, and my assumptions are in ASSUMPTIONS.md. The next video walks through the code. Thanks!"
@@ -54,9 +56,8 @@ _IF it takes >5s:_ stay calm, say _"Meta's test endpoint sometimes takes a few s
 _STOP. Check duration ≤5:00. Title it: `UnQue PoC — Live Demo — [Your Name]`._
 
 **If something fails on camera:** use these lines, don't panic.
-- Webhook never arrives → "The Testing Tool sometimes needs the Page re-selected — let me re-pick the form and resubmit." (Do it; 90% of the time it fires.)
-- App disconnected (red dot) → "The socket dropped — the app auto-reconnects and re-fetches history on `leads:init`." Restart expo, show green dot, resubmit.
-- Absolute emergency backup: run the `curl /api/test-lead` in terminal and say honestly: "Meta's tool is rate-limiting me right now, so here's the same server-to-app push path with a local lead — and here's the earlier successful Testing Tool run [show screenshot/log]." Honesty beats a fake cut.
+- Test event never arrives → click it once more on camera ("Meta's test endpoint sometimes needs a second fire"), then show the inspector + backend log while waiting. If still nothing, go straight to the `curl` card and say honestly: "Meta's test endpoint isn't delivering right now — here's the identical server-to-app push path with a lead, and here's my dry-run log showing the Meta-originated POST landing [show inspector/log]." Honesty beats a fake cut.
+- App disconnected (red dot) → "The socket dropped — the app auto-reconnects and re-fetches history on `leads:init`." Reload the app in the emulator, show green dot, re-fire. (Usual cause: wrong `BACKEND_URL` — Android emulator must use `http://10.0.2.2:3001`, already set in `app.json`.)
 
 ---
 
@@ -67,7 +68,7 @@ _Open VS Code with `backend/src/index.js` and `mobile/App.js` side by side. Have
 ### 1. (0:00–1:00) Problem → solution map
 > "Meta doesn't push directly to phones. Phones can't receive Meta webhooks — they sleep, change IP, and Meta needs a public HTTPS callback. So the standard pattern is a tiny server in the middle: Meta → server webhook → realtime push → app. Mine is Express + Socket.IO + Expo, about 250 lines total."
 
-Draw/say the 5 boxes: `Lead Form → Testing Tool → POST /webhook → Graph API fetch → io.emit('new-lead') → FlatList prepend`.
+Draw/say the 5 boxes: `Lead event (dashboard test event — Testing Tool gated, see ASSUMPTIONS.md) → POST /webhook → Graph API fetch → io.emit('new-lead') → FlatList prepend`.
 
 ### 2. (1:00–3:00) Backend — `backend/src/index.js`
 Walk these in order (scroll, don't paste):
@@ -75,8 +76,9 @@ Walk these in order (scroll, don't paste):
 - **POST /webhook** — "Always `200 EVENT_RECEIVED` first so Meta never retries while we work. Ignore non-`page` objects. Loop `entry[].changes[]`, keep only `field === 'leadgen'`, grab `leadgen_id`."
 - **`fetchLeadFromGraph()`** — "The webhook only carries IDs, not the name/email — privacy by design. So `GET /{leadgen_id}?fields=id,created_time,ad_id,form_id,field_data` with the Page token, then `flattenFieldData()` turns `[{name, values}]` into a plain object."
 - **`saveAndBroadcast()`** — "Dedupe by lead ID — Meta retries webhooks — `unshift` newest-first, then `io.emit('new-lead', lead)`."
-- **Fallback:** "If the token is missing, I still broadcast an ID-only card labelled unenriched, so the demo never shows a blank screen."
+- **Fallback:** "If the token is missing — or Meta sends a sample ID, like dashboard test events do — I still broadcast an ID-only card labelled unenriched, so the demo never shows a blank screen. You saw this card in Loom 1."
 - **GET /api/leads + `leads:init`** — "History for cold starts and reconnects; pull-to-refresh hits the same endpoint."
+- **Publish gate (say it in one breath):** "One thing the code can't fix: Meta only delivers dashboard test events to unpublished apps — publishing needs business verification, and going Live early would deactivate my unapproved `leads_retrieval` even for admins, so staying in Development was the deliberate call. Full detail in ASSUMPTIONS.md items 10–14."
 
 ### 3. (3:00–5:00) Mobile — `mobile/App.js` + `src/config.js`
 - **Connect once:** `io(backendUrl, { transports: ['websocket'] })` in `useEffect`. `connected` state drives the green/red dot.
@@ -88,7 +90,7 @@ Walk these in order (scroll, don't paste):
 > "In-memory store — restart wipes it; production gets Postgres. Signature check is lenient without APP_SECRET — production enforces `X-Hub-Signature-256` strictly. No auth on `/api/leads` — fine for a demo on localhost, never for prod. Socket.IO chosen over FCM polling because the brief wants an already-open screen updated instantly, with zero native setup — Expo Go just works."
 
 ### 5. (6:30–7:00) Close + assumptions
-> "Assumptions are in ASSUMPTIONS.md: Testing-Tool-only traffic, dev-mode App, one Page/Form on camera, ephemeral storage. Thanks — happy to answer anything live."
+> "Assumptions are in ASSUMPTIONS.md: Development-mode app behind Meta's publish gate (dashboard test events + local leads, disclosed in Loom 1), one Page/Form, ephemeral storage. Thanks — happy to answer anything live."
 
 _TITLE: `UnQue PoC — Code Walkthrough — [Your Name]`._
 
@@ -131,4 +133,4 @@ _Example angle: "Last month fixing a websocket bug… I opened the laptop at 9pm
 ---
 
 ## Submission email (copy from SUBMISSION_EMAIL.txt, fill the brackets)
-To: krishna@unque.me, n.sarang@unque.me, nijam@unque.me — attach or link the 3 audios (Drive links preferred over 25 MB attachments), both Loom links (set to "Anyone with link"), GitHub repo link (public), assumptions pasted inline. Send Part 1 + Part 2 together, once.
+To: krishna@unque.me, n.sarang@unque.me, nijam@unque.me — attach or link the 3 audios (Drive links preferred over 25 MB attachments), both Loom links (set to "Anyone with link"), GitHub repo link (public), assumptions pasted inline. **Paste ASSUMPTIONS.md items 10–14 inline and call them out explicitly** — they explain why Loom 1 uses Meta dashboard test events instead of a Testing-Tool submit (publish gate), so evaluators see it as documented method, not a shortcut. Send Part 1 + Part 2 together, once.
