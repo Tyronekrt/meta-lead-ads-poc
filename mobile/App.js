@@ -7,6 +7,7 @@ import {
   RefreshControl,
   SafeAreaView,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import Constants from 'expo-constants';
@@ -14,6 +15,10 @@ import { io } from 'socket.io-client';
 import { DEFAULT_BACKEND_URL, DEBUG_SOCKET } from './src/config';
 
 function resolveBackendUrl() {
+  // In a browser, talk to the backend on the same host the page is served from.
+  if (Platform.OS === 'web' && typeof window !== 'undefined' && window.location?.hostname) {
+    return `http://${window.location.hostname}:3001`;
+  }
   const extraUrl = Constants?.expoConfig?.extra?.backendUrl;
   if (extraUrl) return extraUrl;
   return DEFAULT_BACKEND_URL;
