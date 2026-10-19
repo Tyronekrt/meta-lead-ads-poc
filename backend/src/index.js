@@ -155,6 +155,25 @@ app.get('/webhook', (req, res) => {
   const token = req.query['hub.verify_token'];
   const challenge = req.query['hub.challenge'];
   log('Webhook verification attempt:', { mode, token });
+
+  // No hub.* params => someone just opened the URL in a browser. Show a friendly
+  // page instead of a confusing 403. Meta always sends hub.mode, so this branch
+  // never affects the real verification handshake.
+  if (!mode && !token && !challenge) {
+    return res.status(200).send(
+      `<!doctype html><meta charset="utf-8"><title>Webhook endpoint</title>` +
+        `<body style="font-family:system-ui;max-width:640px;margin:40px auto;line-height:1.5">` +
+        `<h2>✅ Webhook endpoint is live</h2>` +
+        `<p>This URL is for Meta's servers, not for browsing. It accepts:</p>` +
+        `<ul><li><code>GET</code> verification handshake (Meta App Dashboard → Webhooks)</li>` +
+        `<li><code>POST</code> leadgen events (lead submissions)</li></ul>` +
+        `<p>Use this as the <b>Callback URL</b> in the dashboard:</p>` +
+        `<p><code>https://&lt;your-tunnel&gt;/webhook</code> with Verify Token <code>${VERIFY_TOKEN}</code>.</p>` +
+        `<p>Health check: <a href="/health">/health</a> · Leads: <a href="/api/leads">/api/leads</a></p>` +
+        `</body>`
+    );
+  }
+
   if (mode === 'subscribe' && token === VERIFY_TOKEN) {
     log('Webhook verified OK');
     return res.status(200).send(challenge);
